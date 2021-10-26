@@ -1,5 +1,8 @@
 <?php 
 
+require_once './dbc.php';
+$files = getAllFile();
+
 //データベースの接続情報
 define('DB_HOST','localhost');
 define('DB_USER','animal3');
@@ -43,7 +46,80 @@ if(!empty($_POST['btn_submit'])) {
 	$message = preg_replace( '/\A[\p{C}\p{Z}]++|[\p{C}\p{Z}]++\z/u', '', $_POST['message']);
 
     //名前の入力チェック
+    if(empty($view_name)) {
+        $error_message[] = '名前を入力してください。';
+    }else{
+
+        //セッションに表示名を保存
+        $_SESSION['view_name'] = $view_name;
+    }
+
+    //メッセージの入力チェック
+    if(empty($message)) {
+        $error_message[] = 'メッセージを入力してください。';      
+    }else{
+
+        //文字数を確認
+        if(100 < mb_strlen($message,'UTF-8')) {
+            $error_message[] = 'メッセージは１００文字以内で入力してください。';
+        }
+    }
+
+    if(empty($error_message)) {
+
+        //書き込み日時を取得
+        $current_date = date("Y-m-d H:i:s");
+
+        //トランザクション開始
+        $pdo->beginTransaction();
+
+        try{
+
+        //SQL作成
+        $stmt = $pdo->prepare("INSERT INTO message_board(view_name,message,post_date)VALUES(:view_name,:message,:current_date)");
+
+        //値のセット
+        $stmt->bindParam(':view_name',$view_name,PDO::PARAM_STR);
+        $stmt->bindParam(':message',$message,PDO::PARAM_STR);
+        $stmt->bindParam(':current_date',$current_date,PDO::PARAM_STR);
+
+        //SQLクエリの実行
+        $res = $stmt->execute();
+
+        //コミット
+        $res = $pdo->commit();
+
+        }catch(Exception $e) {
+
+            //エラーが発生した時はロールバック
+            $pdo->rollBack();
+        }
+
+        if($res) {
+            $_SESSION['success_message'] = 'メッセージを書き込みました。';
+        }else{
+            $error_message[] = '書き込みに失敗しました。';
+        }
+
+        //プリペアドステートメントを削除
+        $stmt = null;
+
+        header('Location:./');
+        exit;
+    }
 }
+
+if(!empty($pdo)) {
+
+    //メッセージのデータを取得する
+    $sql = "SELECT view_name,message,post_date FROM message_board ORDER BY post_date DESC";
+    $message_array = $pdo->query($sql);
+}
+
+//データベースの接続を閉じる
+$pdo = null;
+
+
 
 
 ?>
@@ -260,6 +336,11 @@ if(!empty($_POST['btn_submit'])) {
             <p><?php echo nl2br(htmlspecialchars($value['message'],ENT_QUOTES,'UTF-8')); ?></p>
         </article>
         <?php endforeach; ?>
+        <?php foreach ($files as $file): ?>
+            <img src="<?php echo "{$file['file_path']}"; ?>" alt="">
+            <p><?php echo h("{$file['caption']}"); ?></p>
+        <?php endforeach;?>
+        
         <?php endif; ?>
      </section>
      <!-- <div class="card-group">
