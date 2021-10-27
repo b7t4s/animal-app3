@@ -1,7 +1,7 @@
 <?php 
 
-require_once './dbc.php';
-$files = getAllFile();
+// require_once './dbc.php';
+// $files = getAllFile();
 
 //データベースの接続情報
 define('DB_HOST','localhost');
@@ -76,7 +76,7 @@ if(!empty($_POST['btn_submit'])) {
         try{
 
         //SQL作成
-        $stmt = $pdo->prepare("INSERT INTO message_board(view_name,message,post_date)VALUES(:view_name,:message,:current_date)");
+        $stmt = $pdo->prepare("INSERT INTO message_table(view_name,message,post_date)VALUES(:view_name,:message,:current_date)");
 
         //値のセット
         $stmt->bindParam(':view_name',$view_name,PDO::PARAM_STR);
@@ -112,7 +112,8 @@ if(!empty($_POST['btn_submit'])) {
 if(!empty($pdo)) {
 
     //メッセージのデータを取得する
-    $sql = "SELECT view_name,message,post_date FROM message_board ORDER BY post_date DESC";
+    $sql = "SELECT view_name,message,post_date FROM message_table ORDER BY post_date DESC";
+    
     $message_array = $pdo->query($sql);
 }
 
