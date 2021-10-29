@@ -113,7 +113,7 @@ if(!empty($pdo)) {
 
     //メッセージのデータを取得する
     $sql = "SELECT view_name,message,post_date FROM message_table ORDER BY post_date DESC";
-    
+
     $message_array = $pdo->query($sql);
 }
 
@@ -283,10 +283,10 @@ $pdo = null;
                 <img src="images/title.png" class="d-block w-100 img-fluid" alt="写真">
             </div>
             <div class="carousel-item carousel-item-ex">
-                <img src="images/concept1.png" class="d-block w-100 img-fluid" alt="写真">
+                <img src="images/concept1.png" class="d-block w-100 img-fluid" alt="concept1">
             </div>
             <div class="carousel-item carousel-item-ex">
-                <img src="images/concept2.png" class="d-block w-100 img-fluid" alt="写真">
+                <img src="images/concept2.png" class="d-block w-100 img-fluid" alt="concept2">
             </div>
         </div>
         <a class="carousel-control-prev" href="#carouselExampleFade" role="button" data-bs-slide="prev">

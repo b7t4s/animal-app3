@@ -115,4 +115,4 @@ if (count($err_msgs) === 0) {
 
 ?>
 
-<a href="./animal.php">戻る</a>
+<a href="./index.php">戻る</a>
